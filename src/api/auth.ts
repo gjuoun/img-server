@@ -6,7 +6,7 @@ export function auth() {
     if (ctx.req.user) {
       next();
     } else {
-      throw new HttpError("username or password is wrong", 401)
+      throw new HttpError("unauthorized user", 401)
     }
   }
 }

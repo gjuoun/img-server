@@ -4,6 +4,8 @@ import { METHOD } from '../types/types.ts'
 import { config } from '../config/config.ts'
 
 import { auth } from '../api/auth.ts'
+import { login } from '../api/login.ts'
+import { register } from '../api/register.ts'
 import { uploadImg } from '../api/upload.ts'
 import { deleteImg } from '../api/delete.ts'
 
@@ -26,39 +28,63 @@ export default async function ({ app }: { app: Application<any> }) {
     }
   );
 
-
   /* -------------------------------------------------------------------------- */
-  /*                                AUTHORIZATION                               */
+  /*                                 MIDDLEWARES                                */
   /* -------------------------------------------------------------------------- */
 
-  // authorization
-  app.use(auth());
+  app.use(mid.json())
 
   /* -------------------------------------------------------------------------- */
   /*                                API ENDPOINTS                               */
   /* -------------------------------------------------------------------------- */
 
+  // TODO: assign jwt token
   /**
-   * POST /upload
+   * POST /api/login
+   * allow user to login and assign jwt tokens
+   */
+  app.use(login())
+
+  // TODO: Refresh jwt token
+  /**
+   * POST /api/token
+   * allow user to login and assign jwt tokens
+   */
+  // app.use(login())
+
+  /**
+   * POST /api/register
+   * allow user to login and assign jwt tokens
+   */
+  app.use(register())
+
+  // authorization
+  app.use(auth());
+
+  /**
+   * POST /api/upload
    * handle file upload - authorized user can upload files
    */
   app.use(uploadImg())
 
   /**
-   * DELETE /delete
+   * DELETE /api/delete
    * handle file delete - authorized user can delete their own files
    */
   app.use(deleteImg())
 
 
-/* -------------------------------------------------------------------------- */
-/*                                SERVE IMAGES                                */
-/* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /*                                SERVE IMAGES                                */
+  /* -------------------------------------------------------------------------- */
 
   // serve img files - authorized user can only access their own images
   app.use(
     (ctx, next) => {
-      if (ctx.req.url.startsWith(`/${ctx.req.user}`) && ctx.req.method === METHOD.GET) {
+      let url = ctx.req.url
+      let user = ctx.req.user
+
+      if (url.startsWith(`/${user}`) && ctx.req.method === METHOD.GET) {
         next()
       } else {
         throw new HttpError("unauthorized access", 403)

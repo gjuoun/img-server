@@ -3,7 +3,7 @@ import { METHOD } from '../types/types.ts'
 
 
 export function deleteImg() {
-  return mid.json(), (ctx: Context<any>, next: Function) => {
+  return (ctx: Context<any>, next: Function) => {
     if (
       ctx.req.url === "/api/delete" &&
       ctx.req.method === METHOD.DELETE) {

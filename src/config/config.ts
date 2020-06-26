@@ -4,7 +4,9 @@ export const config = {
   imgRoot: "./img",
   staticRoot: "./public",
   mysql_hostname: 'localhost',
+  mysql_port: 3306,
   mysql_username: 'johngg',
-  mysql_password: 'test',
-  mysql_dbname: 'test'
+  mysql_password: '21346687',
+  mysql_dbname: 'test',
+  mysql_poolSize: 20
 }
