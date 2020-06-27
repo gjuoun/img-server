@@ -1,6 +1,6 @@
 import { bcrypt } from '../deps.ts'
 import { config } from '../config/config.ts'
-import userModel, { User, UserModel } from '../models/User.ts'
+import userModel, { User, UserModel } from '../models/user.ts'
 import imageModel, { Image, ImageModel } from '../models/image.ts'
 
 export class UserService {

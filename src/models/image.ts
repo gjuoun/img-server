@@ -98,6 +98,34 @@ export class ImageModel {
       return undefined
     }
   }
+
+  async getImagesByUserId(userId: number): Promise<Image[] | undefined> {
+    try {
+      let result: Image[] = await mysql.query("SELECT * FROM image WHERE user_id = ? ", [userId])
+      if (result?.length > 0) {
+        return result
+      } else {
+        throw new Error("no image found, user_id=" + userId)
+      }
+    } catch (e) {
+      console.log(e.message)
+      return undefined
+    }
+  }
+
+  async getImageByFilename(userId: number, filename: string): Promise<Image | undefined> {
+    try {
+      let result: Image[] = await mysql.query("SELECT * FROM image WHERE user_id = ? AND filename=?;", [userId, filename])
+      if (result?.length > 0) {
+        return result[0]
+      } else {
+        throw new Error("no image found, user_id=" + userId + ", filename=" + filename)
+      }
+    } catch (e) {
+      console.log(e.message)
+      return undefined
+    }
+  }
 }
 
 export default new ImageModel()

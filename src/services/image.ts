@@ -1,4 +1,4 @@
-import userModel, { User, UserModel } from '../models/User.ts'
+import userModel, { User, UserModel } from '../models/user.ts'
 import imageModel, { Image, ImageModel } from '../models/image.ts'
 
 export class ImageService {
@@ -12,6 +12,14 @@ export class ImageService {
 
   async getImageById(id: number) {
     return this.imageModel.getImageById(id)
+  }
+
+  async getImagesByUserId(userId: number) {
+    return this.imageModel.getImagesByUserId(userId)
+  }
+
+  async getImageByFilename(userId: number, filename:string) {
+    return this.imageModel.getImageByFilename(userId, filename)
   }
 
   async insertImage(image: Image) {

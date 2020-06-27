@@ -10,6 +10,7 @@ import { register } from '../api/auth/register.ts'
 
 import { uploadImg } from '../api/img/upload.ts'
 import { deleteImg } from '../api/img/delete.ts'
+import { allImages } from "../api/img/all.ts";
 
 export default async function ({ app }: { app: Application<any> }) {
   /* -------------------------------------------------------------------------- */
@@ -65,14 +66,22 @@ export default async function ({ app }: { app: Application<any> }) {
   app.use(auth());
 
   /**
+   * GET /api/img/all
+   * return image information in json format
+   * - authorized user can only get their own images
+   */
+  app.use(allImages())
+  /**
    * POST /api/img/upload
-   * handle file upload - authorized user can upload files
+   * handle file upload 
+   * - authorized user can upload files
    */
   app.use(uploadImg(config.app_imgField))
 
   /**
    * DELETE /api/img/delete
-   * handle file delete - authorized user can delete their own files
+   * handle file delete 
+   * - authorized user can delete their own files
    */
   app.use(deleteImg())
 
@@ -83,13 +92,12 @@ export default async function ({ app }: { app: Application<any> }) {
 
   // serve img files - authorized user can only access their own images
   app.use(
-    async(ctx, next) => {
+    async (ctx, next) => {
       let url = ctx.req.url
       let { userId } = ctx.req.user
 
       if (url.startsWith(`/${userId}`) && ctx.req.method === METHOD.GET) {
-        await next()
-        // returned content-type header must start with 'image'
+        next()
       } else {
         throw new HttpError("unauthorized access", 403)
       }

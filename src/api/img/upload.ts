@@ -42,15 +42,22 @@ async function handleMultipleUpload(ctx: Context<any>, form: FormFile[]) {
   const files = []
   const userId = ctx.req.user.userId
 
-  // ensure content-type is image/*
   for (let file of form) {
+    // ensure there is no duplicate images
+    let imageResult = await imageService.getImageByFilename(userId, file.filename)
+
+    // ensure content-type is image/*
     let contentType = mime.lookup(file.filename)
     if (contentType && (<string>contentType).startsWith("image")) {
       const localPath = "./" + posix.join(config.app_imgRoot, `/${userId}/${file.filename}`)
-      files.push({ ...file, localPath })
+      // skip duplicated images
+      if (!imageResult) {
+        files.push({ ...file, localPath })
+      }
     } else {
-      throw new HttpError("at least one file is not image", 400)
+      throw new HttpError("at least one uploaded file is not image", 400)
     }
+
   }
 
   // write to local disk
@@ -98,6 +105,13 @@ async function handleSingleUpload(ctx: Context<any>, file: FormFile) {
     throw new HttpError("uploaded file is not image", 400)
   }
 
+  let imageResult = await imageService.getImageByFilename(userId, file.filename)
+  if (imageResult) {
+    // image exists
+    throw new HttpError("image exists, filename=" + file.filename, 400)
+  }
+
+  // save to local disk
   const localPath = "./" + posix.join(config.app_imgRoot, `/${userId}/${file.filename}`)
   await writeFileToLocal(localPath, file.content!)
 
@@ -107,14 +121,15 @@ async function handleSingleUpload(ctx: Context<any>, file: FormFile) {
     local_path: localPath
   }
 
-  let result = await imageService.insertImage(image)
+  // save to db
+  let insertResult = await imageService.insertImage(image)
 
-  if (result) {
+  if (insertResult) {
     // add id field to image
     let newImage = {
-      user_id: image.user_id,
-      id: result.id,
-      filename: image.filename
+      ...image,
+      id: insertResult.id,
+      local_path: undefined
     }
 
     ctx.status(201).send({
@@ -134,9 +149,9 @@ async function writeFileToLocal(path: string, content: Uint8Array) {
     // try to read to folder
     await Deno.stat(parsedFile.dir)
   } catch{
-    // folder doesn't exist
-    Deno.mkdirSync(parsedFile.dir)
+    // folder doesn't exist, create it
+    await Deno.mkdir(parsedFile.dir)
   }
 
-  Deno.writeFile(`${parsedFile.dir}/${parsedFile.base}`, content)
+  await Deno.writeFile(`${parsedFile.dir}/${parsedFile.base}`, content)
 }

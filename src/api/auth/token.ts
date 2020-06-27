@@ -1,12 +1,10 @@
-/**
- * Generate new token by refreshToken
- */
-
-
-import { mid, Context, HttpError } from "../../deps.ts";
+import { Context, HttpError } from "../../deps.ts";
 import { METHOD } from '../../types/types.ts'
 import jwtService from '../../services/jwt.ts'
 
+/**
+ * Generate new token by refreshToken
+ */
 export function token() {
   return async (ctx: Context<any>, next: Function) => {
     if (ctx.req.url === "/api/auth/token" && ctx.req.method === METHOD.POST) {

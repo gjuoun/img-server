@@ -1,7 +1,9 @@
 import { mid, Context, HttpError } from "../../deps.ts";
 import { METHOD } from '../../types/types.ts'
+import { User } from '../../models/user.ts'
 import userService from '../../services/user.ts'
 import jwtService from '../../services/jwt.ts'
+import tokenService from '../../services/token.ts'
 
 /**
  * Verify username with password
@@ -23,25 +25,12 @@ export function login() {
           throw new HttpError("password is wrong, username=" + json.username, 400)
         }
 
-        // jwt token expires after 30 seconds
-        const token = jwtService.generateJwt({
-          userId: user.id as number,
-          exp: Date.now() + 30000,
-        })
-
-        const refreshToken = jwtService.generateJwt({
-          userId: user.id as number,
-        })
-
         ctx.send({
           success: true,
           data: {
-            user: {
-              id: user.id,
-              username: user.username
-            },
-            token,
-            refreshToken
+            user: { ...user, password: undefined },
+            token: getToken(user),
+            refreshToken: await getRefreshToken(user)
           }
         })
 
@@ -52,4 +41,31 @@ export function login() {
       next()
     }
   }
+}
+
+function getToken(user: User) {
+  return jwtService.generateJwt({
+    userId: user.id as number,
+    exp: Date.now() + 30000
+  })
+}
+
+async function getRefreshToken(user: User) {
+  let refreshToken = ""
+  let tokenResult = await tokenService.getTokenByUserId(user.id as number)
+
+  if (tokenResult) {
+    // token exists, use it
+    refreshToken = tokenResult.refresh_token
+  } else {
+    // token doesn't exist, create it
+    refreshToken = jwtService.generateJwt({
+      userId: user.id as number,
+    })
+    let newToken = { user_id: user.id as number, refresh_token: refreshToken }
+
+    await tokenService.insertToken(newToken)
+  }
+
+  return refreshToken
 }
