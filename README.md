@@ -1,6 +1,6 @@
 ﻿# Simple Image Server
 
-> Simple image server allows users to save and download photos privately. Users can register and login to the server. Upload their pictures with no one knows, since the server is highly secure.
+> Simple image server allows users to save and download photos privately. Users can register and login to the server, upload or delete their pictures. Since the server is highly secure, it empowers users to build their own private photo gallery.
 
 ### Quick start
 
