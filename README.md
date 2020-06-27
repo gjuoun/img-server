@@ -169,7 +169,7 @@ Note:
 
 #### `POST /api/auth/register`
 
-> allows user to register with `username` and `password`
+> allows user to register with `username` and `password`, returns the created user's `id`
 
 Request:
 
@@ -202,7 +202,7 @@ content-type: application/json
 
 #### `POST /api/auth/login`
 
-> allows user to login with `username` and `password`
+> allows user to login with `username` and `password`, returns user's information with `token` and `refreshToken`
 
 
 Request:
@@ -245,7 +245,7 @@ content-type: application/json
 
 #### `POST /api/auth/token`
 
-> returns new JWT`token` by a given `refreshToken`
+> generates a new JWT`token` by a given `refreshToken`
 
 Request:
 
@@ -336,7 +336,7 @@ interface Image {
 
 #### `DELETE /api/img/delete`
 
-> allows user to delete their image by a given image `id`
+> allows authorized user to delete their image by a given image `id`
 
 Notice in the header `Authorization: Bearer <token>` and `token` must be provided.
 
@@ -376,7 +376,7 @@ content-type: application/json
 
 #### `GET /api/img/all`
 
-> returns the authorized user's images information in json format
+> returns all the image information of the authorized user in json format
 
 Notice in the header `Authorization: Bearer <token>` and `token` must be provided.
 
@@ -405,6 +405,16 @@ content-type: application/json
       }
     ]
   }
+}
+```
+
+- `data.images` is the type of `Image[]`, where:
+
+```ts
+interface Image {
+  id: number;
+  user_id: number;
+  filename: string;
 }
 ```
 
