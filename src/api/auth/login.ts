@@ -1,7 +1,7 @@
-import { mid, Context, HttpError } from "../deps.ts";
-import { METHOD } from '../types/types.ts'
-import userService from '../services/user.ts'
-import jwtService from '../services/jwt.ts'
+import { mid, Context, HttpError } from "../../deps.ts";
+import { METHOD } from '../../types/types.ts'
+import userService from '../../services/user.ts'
+import jwtService from '../../services/jwt.ts'
 
 /**
  * Verify username with password
@@ -10,7 +10,7 @@ import jwtService from '../services/jwt.ts'
 
 export function login() {
   return async (ctx: Context<any>, next: Function) => {
-    if (ctx.req.url === "/api/login" && ctx.req.method === METHOD.POST) {
+    if (ctx.req.url === "/api/auth/login" && ctx.req.method === METHOD.POST) {
       let json = ctx.req.json
       if (json.username && json.password) {
         const user = await userService.getUserByUsername(json.username)

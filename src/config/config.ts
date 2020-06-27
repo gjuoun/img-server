@@ -1,9 +1,15 @@
 export const config = {
-  port: 8000,
-  maxFileSize: 20 << 20, // 20Mb
-  imgRoot: "./img",
-  staticRoot: "./public",
+  app_port: 8000,
+  app_maxFileSize: 20 << 20, // 20Mb
+  app_imgRoot: "./img",
+  app_imgField: "multiple",
+  app_staticRoot: "./public",
+
+  user_usernameRegexp: /\w{5,30}/,
+  user_passwordRegexp: /.{8,64}/,
+
   jwt_key: "mysecret",
+
   mysql_hostname: 'localhost',
   mysql_port: 3306,
   mysql_username: 'johngg',

@@ -3,13 +3,13 @@
  */
 
 
-import { mid, Context, HttpError } from "../deps.ts";
-import { METHOD } from '../types/types.ts'
-import jwtService from '../services/jwt.ts'
+import { mid, Context, HttpError } from "../../deps.ts";
+import { METHOD } from '../../types/types.ts'
+import jwtService from '../../services/jwt.ts'
 
 export function token() {
   return async (ctx: Context<any>, next: Function) => {
-    if (ctx.req.url === "/api/token" && ctx.req.method === METHOD.POST) {
+    if (ctx.req.url === "/api/auth/token" && ctx.req.method === METHOD.POST) {
       let json = ctx.req.json
       if (json.refreshToken) {
         let payload = await jwtService.validateJwt(json.refreshToken)

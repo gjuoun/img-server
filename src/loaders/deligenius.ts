@@ -3,12 +3,13 @@ import { Application, HttpError, mid } from "../deps.ts";
 import { METHOD } from '../types/types.ts'
 import { config } from '../config/config.ts'
 
-import { auth } from '../api/auth.ts'
-import { login } from '../api/login.ts'
-import { token } from '../api/token.ts'
-import { register } from '../api/register.ts'
-import { uploadImg } from '../api/upload.ts'
-import { deleteImg } from '../api/delete.ts'
+import { auth } from '../api/auth/auth.ts'
+import { login } from '../api/auth/login.ts'
+import { token } from '../api/auth/token.ts'
+import { register } from '../api/auth/register.ts'
+
+import { uploadImg } from '../api/img/upload.ts'
+import { deleteImg } from '../api/img/delete.ts'
 
 export default async function ({ app }: { app: Application<any> }) {
   /* -------------------------------------------------------------------------- */
@@ -17,7 +18,7 @@ export default async function ({ app }: { app: Application<any> }) {
 
   // serve static files
   app.use(
-    mid.serveStatic(config.staticRoot),
+    mid.serveStatic(config.app_staticRoot),
     (ctx, next) => {
       // redirect home page as needed
       if (ctx.req.url === "/") {
@@ -40,35 +41,37 @@ export default async function ({ app }: { app: Application<any> }) {
   /* -------------------------------------------------------------------------- */
 
   /**
-   * POST /api/login
+   * POST /api/auth/login
    * allow user to login and assign jwt tokens
    */
   app.use(login())
 
   /**
-   * POST /api/token
-   * allow user to login and assign jwt tokens
+   * POST /api/auth/token
+   * allow user to get token by a refreshToken
    */
   app.use(token())
 
   /**
-   * POST /api/register
+   * POST /api/auth/register
    * allow user to login and assign jwt tokens
    */
   app.use(register())
 
-  // authorization
+  /**
+   * Read Authorization header
+   * then populates ctx.req.user = {userId: number}
+   */
   app.use(auth());
 
   /**
-   * POST /api/upload
+   * POST /api/img/upload
    * handle file upload - authorized user can upload files
-   * @param: fieldName: string
    */
-  app.use(uploadImg("multiple"))
+  app.use(uploadImg(config.app_imgField))
 
   /**
-   * DELETE /api/delete
+   * DELETE /api/img/delete
    * handle file delete - authorized user can delete their own files
    */
   app.use(deleteImg())
@@ -80,17 +83,18 @@ export default async function ({ app }: { app: Application<any> }) {
 
   // serve img files - authorized user can only access their own images
   app.use(
-    (ctx, next) => {
+    async(ctx, next) => {
       let url = ctx.req.url
-      let user = ctx.req.user
+      let { userId } = ctx.req.user
 
-      if (url.startsWith(`/${user}`) && ctx.req.method === METHOD.GET) {
-        next()
+      if (url.startsWith(`/${userId}`) && ctx.req.method === METHOD.GET) {
+        await next()
+        // returned content-type header must start with 'image'
       } else {
         throw new HttpError("unauthorized access", 403)
       }
     },
-    mid.serveStatic(config.imgRoot)
+    mid.serveStatic(config.app_imgRoot)
   );
 
 

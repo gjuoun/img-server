@@ -1,17 +1,21 @@
-import {bcrypt} from '../deps.ts'
-
+import { bcrypt } from '../deps.ts'
+import { config } from '../config/config.ts'
 import userModel, { User, UserModel } from '../models/User.ts'
 import imageModel, { Image, ImageModel } from '../models/image.ts'
 
 export class UserService {
   private userModel: UserModel
   private imageModel: ImageModel
-  private usernameRegexp = /\w{5,30}/
-  private passwordRegexp = /.{8,64}/
+  private usernameRegexp: RegExp
+  private passwordRegexp: RegExp
 
-  constructor(userModel: UserModel, imageModel: ImageModel) {
+  constructor(
+    userModel: UserModel, imageModel: ImageModel,
+    usernameRegexp: RegExp, passwordRegexp: RegExp) {
     this.userModel = userModel
     this.imageModel = imageModel
+    this.usernameRegexp = usernameRegexp
+    this.passwordRegexp = passwordRegexp
   }
 
   async getUserById(id: number) {
@@ -32,9 +36,9 @@ export class UserService {
 
   isValidUser(username: string, password: string) {
     if (!username.match(this.usernameRegexp)) {
-      return { valid: false, message: "username must be letter or numbers, with length of 5 to 30" }
+      return { valid: false, message: "username is invalid" }
     } else if (!password.match(this.passwordRegexp)) {
-      return { valid: false, message: "password must have a length of 8,64" }
+      return { valid: false, message: "password is invalid" }
     } else {
       return { valid: true }
     }
@@ -45,5 +49,8 @@ export class UserService {
   }
 }
 
-export default new UserService(userModel, imageModel)
+export default new UserService(
+  userModel, imageModel,
+  config.user_usernameRegexp, config.user_passwordRegexp
+)
 

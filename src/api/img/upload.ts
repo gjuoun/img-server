@@ -1,17 +1,17 @@
-import { Context, HttpError, multiParser, FormFile, posix } from "../deps.ts";
-import { config } from '../config/config.ts'
-import { METHOD } from '../types/types.ts'
+import { Context, HttpError, multiParser, FormFile, posix, mime } from "../../deps.ts";
+import { config } from '../../config/config.ts'
+import { METHOD } from '../../types/types.ts'
 
-import { Image } from '../models/image.ts'
-import imageService from '../services/image.ts'
+import { Image } from '../../models/image.ts'
+import imageService from '../../services/image.ts'
 
 export function uploadImg(fieldName: string) {
   return async (ctx: Context<any>, next: Function) => {
     if (
-      ctx.req.url === "/api/upload" &&
+      ctx.req.url === "/api/img/upload" &&
       ctx.req.method === METHOD.POST) {
 
-      const form = await multiParser(ctx.req, config.maxFileSize)
+      const form = await multiParser(ctx.req, config.app_maxFileSize)
 
       if (!form || !form[fieldName]) {
         throw new HttpError("no such field exists in upload, field=" + fieldName, 400)
@@ -38,26 +38,49 @@ export function uploadImg(fieldName: string) {
 }
 
 async function handleMultipleUpload(ctx: Context<any>, form: FormFile[]) {
-  let images: Image[] = []
+  const images: Image[] = []
+  const files = []
   const userId = ctx.req.user.userId
 
+  // ensure content-type is image/*
   for (let file of form) {
-    const localPath = "./" + posix.join(config.imgRoot, `/${userId}/${file.filename}`)
-    await writeFileToLocal(localPath, file.content!)
+    let contentType = mime.lookup(file.filename)
+    if (contentType && (<string>contentType).startsWith("image")) {
+      const localPath = "./" + posix.join(config.app_imgRoot, `/${userId}/${file.filename}`)
+      files.push({ ...file, localPath })
+    } else {
+      throw new HttpError("at least one file is not image", 400)
+    }
+  }
+
+  // write to local disk
+  for (let file of files) {
+    await writeFileToLocal(file.localPath, file.content!)
 
     images.push({
       user_id: userId,
       filename: file.filename,
-      local_path: localPath
+      local_path: file.localPath
     })
   }
 
+  // save to db
   let result = await imageService.insertManyImages(images)
   if (result) {
+    // add ids to returned images
+    let newImages = images.map((image, index) => {
+      return {
+        id: result![index].id,
+        user_id: image.user_id,
+        filename: image.filename
+      }
+    })
+
+    // send out response
     ctx.status(201).send({
       success: true,
       data: {
-        images
+        images: newImages
       }
     })
   } else {
@@ -67,25 +90,37 @@ async function handleMultipleUpload(ctx: Context<any>, form: FormFile[]) {
 
 
 async function handleSingleUpload(ctx: Context<any>, file: FormFile) {
-  let images: Image[] = []
   const userId = ctx.req.user.userId
 
-  // const userFolder = "./" + posix.join(config.imgRoot, `/${userId}`)
-  const localPath = "./" + posix.join(config.imgRoot, `/${userId}/${file.filename}`)
+  const contentType = mime.lookup(file.filename)
+  // ensure content-type is image/*
+  if (!contentType || !(<string>contentType).startsWith("image")) {
+    throw new HttpError("uploaded file is not image", 400)
+  }
+
+  const localPath = "./" + posix.join(config.app_imgRoot, `/${userId}/${file.filename}`)
   await writeFileToLocal(localPath, file.content!)
 
-  images.push({
+  let image: Image = {
     user_id: userId,
     filename: file.filename,
     local_path: localPath
-  })
+  }
 
-  let result = await imageService.insertImage(images[0])
+  let result = await imageService.insertImage(image)
+
   if (result) {
+    // add id field to image
+    let newImage = {
+      user_id: image.user_id,
+      id: result.id,
+      filename: image.filename
+    }
+
     ctx.status(201).send({
       success: true,
       data: {
-        images
+        images: [newImage]
       }
     })
   } else {

@@ -1,8 +1,8 @@
-import { Context, HttpError } from "../deps.ts";
+import { Context, HttpError } from "../../deps.ts";
 
 export function auth() {
   return (ctx: Context<any>, next: Function) => {
-    ctx.req.user = {userId: 2}
+    ctx.req.user = { userId: 2 }
     if (ctx.req.user) {
       next();
     } else {

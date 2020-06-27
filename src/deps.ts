@@ -2,7 +2,7 @@
 export { Application, Context, HttpError } from "https://deno.land/x/deligenius/mod.ts";
 
 // bodyparser - mid
-export { mid } from "https://raw.githubusercontent.com/deligenius/bodyparser/master/mod.ts";
+export { mid , mime} from "https://raw.githubusercontent.com/deligenius/bodyparser/master/mod.ts";
 
 // multiParser
 export { multiParser, FormFile } from 'https://deno.land/x/multiparser/mod.ts'

@@ -1,11 +1,11 @@
-import { Context, HttpError, bcrypt } from "../deps.ts";
-import { METHOD } from '../types/types.ts'
-import userService from '../services/user.ts'
+import { Context, HttpError, bcrypt } from "../../deps.ts";
+import { METHOD } from '../../types/types.ts'
+import userService from '../../services/user.ts'
 
 
 export function register() {
   return async (ctx: Context<any>, next: Function) => {
-    if (ctx.req.url === "/api/register" && ctx.req.method === METHOD.POST) {
+    if (ctx.req.url === "/api/auth/register" && ctx.req.method === METHOD.POST) {
       const json = ctx.req.json
       if (json.username && json.password) {
         // in case of duplicated user found
