@@ -219,7 +219,7 @@ content-type: application/json
 
 A successful response:
 
-- `token` and `refreshToken` both are JSON web tokens. After validate JWT you will find its `payload = {userId: number, exp: number}`
+- `token` and `refreshToken` both are JSON web tokens. They are bundled with a `payload` = `{userId: number}`
 - `token` will be used for authorization, it expires after 30 seconds.
 - `refreshToken` will be used at `POST /api/auth/token`
 
