@@ -3,6 +3,7 @@ export const config = {
   maxFileSize: 20 << 20, // 20Mb
   imgRoot: "./img",
   staticRoot: "./public",
+  jwt_key: "mysecret",
   mysql_hostname: 'localhost',
   mysql_port: 3306,
   mysql_username: 'johngg',

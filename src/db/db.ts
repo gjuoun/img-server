@@ -1,8 +1,8 @@
-import { Client } from "https://deno.land/x/mysql/mod.ts";
+import { MySQLClient } from "../deps.ts";
 import { config } from '../config/config.ts'
 
 
-export const mysql = await new Client().connect({
+export const mysql = await new MySQLClient().connect({
   hostname: config.mysql_hostname,
   port: config.mysql_port,
   username: config.mysql_username,

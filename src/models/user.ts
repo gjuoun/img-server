@@ -1,3 +1,4 @@
+import { bcrypt } from "../deps.ts";
 import { mysql } from '../db/db.ts'
 
 export interface User {
@@ -7,11 +8,14 @@ export interface User {
 }
 
 export class UserModel {
-  // TODO: encrypt user password
+
   async insertUser(user: User): Promise<{ id: number } | undefined> {
     try {
+      // hash password
+      const hashedPassword = bcrypt.hashSync(user.password)
+
       let query = `INSERT INTO user(username, password) values(?, ?)`
-      let result = await mysql.execute(query, [user.username, user.password])
+      let result = await mysql.execute(query, [user.username, hashedPassword])
       if (result) {
         return { id: result.lastInsertId as number }
       } else {

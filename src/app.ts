@@ -7,7 +7,7 @@ async function startApp() {
   await init({ app })
 
   app.listen();
-  console.log(`Server is running at ${config.port}`);
+  console.log(`Server is running at port:${config.port}`);
 }
 
 startApp()

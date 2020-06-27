@@ -5,6 +5,7 @@ import { config } from '../config/config.ts'
 
 import { auth } from '../api/auth.ts'
 import { login } from '../api/login.ts'
+import { token } from '../api/token.ts'
 import { register } from '../api/register.ts'
 import { uploadImg } from '../api/upload.ts'
 import { deleteImg } from '../api/delete.ts'
@@ -38,19 +39,17 @@ export default async function ({ app }: { app: Application<any> }) {
   /*                                API ENDPOINTS                               */
   /* -------------------------------------------------------------------------- */
 
-  // TODO: assign jwt token
   /**
    * POST /api/login
    * allow user to login and assign jwt tokens
    */
   app.use(login())
 
-  // TODO: Refresh jwt token
   /**
    * POST /api/token
    * allow user to login and assign jwt tokens
    */
-  // app.use(login())
+  app.use(token())
 
   /**
    * POST /api/register
@@ -64,8 +63,9 @@ export default async function ({ app }: { app: Application<any> }) {
   /**
    * POST /api/upload
    * handle file upload - authorized user can upload files
+   * @param: fieldName: string
    */
-  app.use(uploadImg())
+  app.use(uploadImg("multiple"))
 
   /**
    * DELETE /api/delete
