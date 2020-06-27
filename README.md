@@ -19,6 +19,8 @@ Run with docker-compose
 > docker-compose up
 ```
 
+**The server runs on `localhost:8000` by default, unless you provide `APP_PORT=<port>` at `docker-compose.yml`**
+
 To stop the servers, press `CTRL+C`, or type:
 
 ```bash
@@ -72,7 +74,7 @@ Now you should be ready to go, let's run `./src/app.ts`
 > deno run -A ./src/app.ts
 ```
 
-The server runs on `localhost:8000` by default, unless you provide `APP_PORT=8000` at `.env`
+**The server runs on `localhost:8000` by default, unless you provide `APP_PORT=<port>` at `.env`**
 
 Note:
 
