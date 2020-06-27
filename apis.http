@@ -1,0 +1,57 @@
+# In order to use this script
+# please use VSCode and install VScode extension: REST Client
+
+
+POST http://localhost:8000/api/auth/register HTTP/1.1
+content-type: application/json
+
+{
+    "username": "johnguo",
+    "password": "mypassword"
+}
+
+###
+
+POST http://localhost:8000/api/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "username": "johnguo",
+    "password": "mypassword"
+}
+
+###
+POST http://localhost:8000/api/auth/token HTTP/1.1
+content-type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjJ9.C-H4Nxs0f-W_397n8xL3HB05rNenUXeOoRXm3UbUoxE"
+}
+
+###
+POST http://localhost:8000/api/img/upload HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImV4cCI6MTU5MzI1OTQwMTE5MH0.SbRGNWNkPwqZhuY05VNfWO-DhheoiIsVFOQoLraU5U8
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="multiple"; filename="test.jpg"
+Content-Type: image/jpg
+
+< ./test.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+###
+GET http://localhost:8000/api/img/all HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImV4cCI6MTU5MzI2MDE3MzE2MX0.vht5rarRmGX33gKODxk0cdFjzAY_bT4fSpTulEy9mhQ
+
+###
+GET http://localhost:8000/2/2.jpg HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImV4cCI6MTU5MzI1OTU2NTg3OH0.T0bW9PaO3MC9spUIldwJJsFvk9vdZVXbrKUMsRbZ_Xg
+
+### 
+DELETE http://localhost:8000/api/img/delete HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImV4cCI6MTU5MzI2MDc3ODY1MH0.1A4-atx_S11xHcabRtAFRoZuatKPuYpuyQf17sbLWEo
+
+{
+    "id": 2
+}
