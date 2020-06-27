@@ -96,9 +96,10 @@ Note:
   - [POST /api/auth/register](#post-apiauthregister)
   - [POST /api/auth/login](#post-apiauthlogin)
   - [POST /api/auth/token](#post-apiauthtoken)
-  - [POST /api/auth/upload](#post-apiauthupload)
-  - [GET /:userId/:filename](#get-useridfilename)
+  - [POST /api/img/upload](#post-apiimgupload)
   - [DELETE /api/img/delete](#delete-apiimgdelete)
+  - [GET /api/img/all](#get-apiimgall)
+  - [GET /:userId/:filename](#get-useridfilename)
 
 ---
 
@@ -168,6 +169,8 @@ Note:
 
 #### `POST /api/auth/register`
 
+> allows user to register with `username` and `password`
+
 Request:
 
 ```http
@@ -198,6 +201,9 @@ content-type: application/json
 ## [🔝](#table-of-contents)
 
 #### `POST /api/auth/login`
+
+> allows user to login with `username` and `password`
+
 
 Request:
 
@@ -239,6 +245,8 @@ content-type: application/json
 
 #### `POST /api/auth/token`
 
+> returns new JWT`token` by a given `refreshToken`
+
 Request:
 
 ```http
@@ -269,9 +277,11 @@ content-type: application/json
 
 ## [🔝](#table-of-contents)
 
-#### `POST /api/auth/upload`
+#### `POST /api/img/upload`
 
-Notice the header `Authorization: Bearer <token>` and `token` must be provided.
+> allows authorized user to upload images
+
+Notice in the header `Authorization: Bearer <token>` and `token` must be provided.
 
 Also, in `.env` file, `APP_IMGFIELD` **must match** the form field with image files.
 
@@ -324,30 +334,11 @@ interface Image {
 
 ## [🔝](#table-of-contents)
 
-#### `GET /:userId/:filename`
-
-Notice the header `Authorization: Bearer <token>` and `token` must be provided.
-
-Request:
-
-```http
-GET http://localhost:8000/2/2.jpg HTTP/1.1
-Authorization: Bearer <token>
-```
-
-Response is a static image file:
-
-```http
-HTTP/1.1 200 OK
-content-length: 94402
-content-type: image/jpeg
-```
-
-## [🔝](#table-of-contents)
-
 #### `DELETE /api/img/delete`
 
-Notice the header `Authorization: Bearer <token>` and `token` must be provided.
+> allows user to delete their image by a given image `id`
+
+Notice in the header `Authorization: Bearer <token>` and `token` must be provided.
 
 Request:
 
@@ -369,7 +360,7 @@ content-length: 120
 content-type: application/json
 
 {
-  "succes": true,
+  "success": true,
   "message": "successful delete file: 2.jpg, id=2",
   "data": {
     "image": {
@@ -382,3 +373,65 @@ content-type: application/json
 ```
 
 ## [🔝](#table-of-contents)
+
+#### `GET /api/img/all`
+
+> returns the authorized user's images information in json format
+
+Notice in the header `Authorization: Bearer <token>` and `token` must be provided.
+
+Request:
+
+```http
+GET http://localhost:8000/api/img/all HTTP/1.1
+Authorization: Bearer <token>
+```
+
+A successful response: 
+
+```http
+HTTP/1.1 200 OK
+content-length: 76
+content-type: application/json
+
+{
+  "success": true,
+  "data": {
+    "images": [
+      {
+        "id": 1,
+        "user_id": 2,
+        "filename": "2.jpg"
+      }
+    ]
+  }
+}
+```
+
+## [🔝](#table-of-contents)
+
+#### `GET /:userId/:filename`
+
+> returns static image file to the authorized user
+
+Notice in the header `Authorization: Bearer <token>` and `token` must be provided.
+
+Request:
+
+```http
+GET http://localhost:8000/2/2.jpg HTTP/1.1
+Authorization: Bearer <token>
+```
+
+Response is a static image file:
+
+```http
+HTTP/1.1 200 OK
+content-length: 94402
+content-type: image/jpeg
+```
+
+## [🔝](#table-of-contents)
+
+
+

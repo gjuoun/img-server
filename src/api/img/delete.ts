@@ -26,13 +26,14 @@ export function deleteImg() {
 
         // remove from local disk
         try {
+          await Deno.remove(image.local_path)
+
           ctx.send({
-            succes: true, message: `successful delete file: ${image.filename}, id=${image.id}`,
+            success: true, message: `successful delete file: ${image.filename}, id=${image.id}`,
             data: {
               image: { ...image, local_path: undefined }
             }
           })
-          Deno.remove(image.local_path)
         } catch (e) {
           ctx.status(400).send({
             success: false,

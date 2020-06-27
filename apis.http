@@ -41,7 +41,7 @@ Content-Type: image/jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 ###
 GET http://localhost:8000/api/img/all HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImV4cCI6MTU5MzI2MDE3MzE2MX0.vht5rarRmGX33gKODxk0cdFjzAY_bT4fSpTulEy9mhQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImV4cCI6MTU5MzI5MTg3Nzk5MH0.lLWDBWfuPTFD4qpKCQrUlKp9Tf13pIGNibNSatbDNtI
 
 ###
 GET http://localhost:8000/2/2.jpg HTTP/1.1
