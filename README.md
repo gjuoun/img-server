@@ -6,14 +6,14 @@
 
 Requirement: [Docker](https://www.docker.com/)
 
-Clone this repository
+**Clone this repository**
 
 ```bash
 > git clone https://github.com/gjuoun/img-server.git
 > cd ./img-server
 ```
 
-Run with docker-compose
+**Run with docker-compose**
 
 ```bash
 > docker-compose up
@@ -49,13 +49,12 @@ Requirement:
 - [Deno runtime](https://deno.land/#installation)
 - A [MySQL database](https://www.mysql.com/) instance, it can be local or remote
 
-First, clone this repo
-
+**Clone the repo**
 ```bash
 > git clone https://github.com/gjuoun/img-server.git
 > cd ./img-server
 ```
-
+**Environment variables**
 then you need to configure the environment variables, by copying `.env.example` as `.env` to the root folder. There are few fields you need to change in `.env` file, make sure they match your `MySQL` instance configuration:
 
 ```HTML
@@ -67,6 +66,14 @@ MYSQL_PASSWORD=dbpassword
 MYSQL_DATABASE=test
 ...
 ```
+
+**Initialize MySQL database**
+
+In order to make database work with the server, `./data/init.sql` includes scripts that initialize database with the basic schemas. 
+
+Please import `./data/init.sql` to your database before server start
+
+**Running server**
 
 Now you should be ready to go, let's run `./src/app.ts`
 
