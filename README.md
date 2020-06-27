@@ -55,6 +55,7 @@ Requirement:
 > cd ./img-server
 ```
 **Environment variables**
+
 then you need to configure the environment variables, by copying `.env.example` as `.env` to the root folder. There are few fields you need to change in `.env` file, make sure they match your `MySQL` instance configuration:
 
 ```HTML
