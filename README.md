@@ -451,5 +451,9 @@ content-type: image/jpeg
 
 ## [🔝](#table-of-contents)
 
+### Postman scripts
 
+A collection of postman request examples.
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/c0ef89a2b627398c6f5c)
 

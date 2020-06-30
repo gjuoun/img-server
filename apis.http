@@ -41,11 +41,11 @@ Content-Type: image/jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 ###
 GET http://localhost:8000/api/img/all HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImV4cCI6MTU5MzI5MTg3Nzk5MH0.lLWDBWfuPTFD4qpKCQrUlKp9Tf13pIGNibNSatbDNtI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImV4cCI6MTU5MzUzNjAzNjMwOX0.61kEy3e4Rs3EYVcsYCmV0QwIsMy7IjMbHMtrnlVUL9Y
 
 ###
 GET http://localhost:8000/2/2.jpg HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsImV4cCI6MTU5MzI1OTU2NTg3OH0.T0bW9PaO3MC9spUIldwJJsFvk9vdZVXbrKUMsRbZ_Xg
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImV4cCI6MTU5MzUzNjAzNjMwOX0.61kEy3e4Rs3EYVcsYCmV0QwIsMy7IjMbHMtrnlVUL9Y
 
 ### 
 DELETE http://localhost:8000/api/img/delete HTTP/1.1
