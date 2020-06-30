@@ -455,5 +455,5 @@ content-type: image/jpeg
 
 A collection of postman request examples.
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/c0ef89a2b627398c6f5c)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/d71a59d9ab764634b69c)
 
