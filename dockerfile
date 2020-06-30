@@ -1,4 +1,5 @@
-FROM hayd/alpine-deno:1.1.1
+# FROM hayd/alpine-deno:1.1.1
+FROM hayd/ubuntu-deno:latest
 
 WORKDIR /home/app
 
