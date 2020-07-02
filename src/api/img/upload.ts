@@ -60,7 +60,6 @@ async function handleMultipleUpload(ctx: Context<any>, form: FormFileV2[]) {
     } else {
       throw new HttpError("at least one uploaded file is not image", 400)
     }
-
   }
 
   // write to local disk
@@ -98,53 +97,6 @@ async function handleMultipleUpload(ctx: Context<any>, form: FormFileV2[]) {
   }
 }
 
-
-// async function handleSingleUpload(ctx: Context<any>, file: FormFileV2) {
-//   const userId = ctx.req.user.userId
-
-//   const contentType = file.contentType
-//   // ensure content-type is image/*
-//   if (!contentType || !contentType.startsWith("image")) {
-//     throw new HttpError("uploaded file is not image", 400)
-//   }
-
-//   let imageResult = await imageService.getImageByFilename(userId, file.filename)
-//   if (imageResult) {
-//     // image exists
-//     throw new HttpError("image exists, filename=" + file.filename, 400)
-//   }
-
-//   // save to local disk
-//   const localPath = "./" + posix.join(config.app_imgRoot, `/${userId}/${file.filename}`)
-//   await writeFileToLocal(localPath, file.content!)
-
-//   let image: Image = {
-//     user_id: userId,
-//     filename: file.filename,
-//     local_path: localPath
-//   }
-
-//   // save to db
-//   let insertResult = await imageService.insertImage(image)
-
-//   if (insertResult) {
-//     // add id field to image
-//     let newImage = {
-//       ...image,
-//       id: insertResult.id,
-//       local_path: undefined
-//     }
-
-//     ctx.status(201).send({
-//       success: true,
-//       data: {
-//         images: [newImage]
-//       }
-//     })
-//   } else {
-//     throw new HttpError("insert single image error", 400)
-//   }
-// }
 
 function writeFileToLocal(path: string, content: Uint8Array) {
 
