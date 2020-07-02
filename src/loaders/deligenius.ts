@@ -18,18 +18,18 @@ export default async function ({ app }: { app: Application<any> }) {
   /* -------------------------------------------------------------------------- */
 
   // serve static files
-  app.use(
-    mid.serveStatic(config.app_staticRoot),
-    (ctx, next) => {
-      // redirect home page as needed
-      if (ctx.req.url === "/") {
-        ctx.res.headers.set("Location", "/index.html")
-        ctx.status(307).send("")
-      } else {
-        next()
-      }
-    }
-  );
+  // app.use(
+  //   mid.serveStatic(config.app_staticRoot),
+  //   (ctx, next) => {
+  //     // redirect home page as needed
+  //     if (ctx.req.url === "/") {
+  //       ctx.res.headers.set("Location", "/index.html")
+  //       ctx.status(307).send("")
+  //     } else {
+  //       next()
+  //     }
+  //   }
+  // );
 
   /* -------------------------------------------------------------------------- */
   /*                                 MIDDLEWARES                                */
