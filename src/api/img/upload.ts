@@ -1,4 +1,9 @@
-import { Context, HttpError, multiParser, FormFile, posix, mime } from "../../deps.ts";
+import {
+  Context, HttpError,
+  multiParser, FormFile, multiParserV2, FormV2, FormFileV2,
+  posix, mime, ensureFileSync
+} from "../../deps.ts";
+
 import { config } from '../../config/config.ts'
 import { METHOD } from '../../types/types.ts'
 
@@ -11,25 +16,23 @@ export function uploadImg(fieldName: string) {
       ctx.req.url === "/api/img/upload" &&
       ctx.req.method === METHOD.POST) {
 
-      const form = await multiParser(ctx.req, config.app_maxFileSize)
+      // const form = await multiParser(ctx.req, config.app_maxFileSize)
+      const form = await multiParserV2(ctx.req)
 
-      if (!form || !form[fieldName]) {
+      if (!form || !form.files[fieldName]) {
         throw new HttpError("no such field exists in upload, field=" + fieldName, 400)
       }
 
-      let files = form[fieldName]
+      let files = form.files[fieldName]
 
       // multiple files upload
       if (files instanceof Array) {
         await handleMultipleUpload(ctx, files)
       }
       // single file upload
-      else if (typeof files === "object") {
-        await handleSingleUpload(ctx, files as FormFile)
-      }
-      // the field is string
       else {
-        throw new HttpError("only file upload is allowed", 400)
+        // await handleSingleUpload(ctx, files as FormFileV2)
+        await handleMultipleUpload(ctx, [files])
       }
     } else {
       next()
@@ -37,7 +40,7 @@ export function uploadImg(fieldName: string) {
   }
 }
 
-async function handleMultipleUpload(ctx: Context<any>, form: FormFile[]) {
+async function handleMultipleUpload(ctx: Context<any>, form: FormFileV2[]) {
   const images: Image[] = []
   const files = []
   const userId = ctx.req.user.userId
@@ -47,8 +50,8 @@ async function handleMultipleUpload(ctx: Context<any>, form: FormFile[]) {
     let imageResult = await imageService.getImageByFilename(userId, file.filename)
 
     // ensure content-type is image/*
-    let contentType = mime.lookup(file.filename)
-    if (contentType && (<string>contentType).startsWith("image")) {
+    let contentType = file.contentType
+    if (contentType && contentType.startsWith("image")) {
       const localPath = "./" + posix.join(config.app_imgRoot, `/${userId}/${file.filename}`)
       // skip duplicated images
       if (!imageResult) {
@@ -62,7 +65,7 @@ async function handleMultipleUpload(ctx: Context<any>, form: FormFile[]) {
 
   // write to local disk
   for (let file of files) {
-    await writeFileToLocal(file.localPath, file.content!)
+    writeFileToLocal(file.localPath, file.content)
 
     images.push({
       user_id: userId,
@@ -96,62 +99,56 @@ async function handleMultipleUpload(ctx: Context<any>, form: FormFile[]) {
 }
 
 
-async function handleSingleUpload(ctx: Context<any>, file: FormFile) {
-  const userId = ctx.req.user.userId
+// async function handleSingleUpload(ctx: Context<any>, file: FormFileV2) {
+//   const userId = ctx.req.user.userId
 
-  const contentType = mime.lookup(file.filename)
-  // ensure content-type is image/*
-  if (!contentType || !(<string>contentType).startsWith("image")) {
-    throw new HttpError("uploaded file is not image", 400)
-  }
+//   const contentType = file.contentType
+//   // ensure content-type is image/*
+//   if (!contentType || !contentType.startsWith("image")) {
+//     throw new HttpError("uploaded file is not image", 400)
+//   }
 
-  let imageResult = await imageService.getImageByFilename(userId, file.filename)
-  if (imageResult) {
-    // image exists
-    throw new HttpError("image exists, filename=" + file.filename, 400)
-  }
+//   let imageResult = await imageService.getImageByFilename(userId, file.filename)
+//   if (imageResult) {
+//     // image exists
+//     throw new HttpError("image exists, filename=" + file.filename, 400)
+//   }
 
-  // save to local disk
-  const localPath = "./" + posix.join(config.app_imgRoot, `/${userId}/${file.filename}`)
-  await writeFileToLocal(localPath, file.content!)
+//   // save to local disk
+//   const localPath = "./" + posix.join(config.app_imgRoot, `/${userId}/${file.filename}`)
+//   await writeFileToLocal(localPath, file.content!)
 
-  let image: Image = {
-    user_id: userId,
-    filename: file.filename,
-    local_path: localPath
-  }
+//   let image: Image = {
+//     user_id: userId,
+//     filename: file.filename,
+//     local_path: localPath
+//   }
 
-  // save to db
-  let insertResult = await imageService.insertImage(image)
+//   // save to db
+//   let insertResult = await imageService.insertImage(image)
 
-  if (insertResult) {
-    // add id field to image
-    let newImage = {
-      ...image,
-      id: insertResult.id,
-      local_path: undefined
-    }
+//   if (insertResult) {
+//     // add id field to image
+//     let newImage = {
+//       ...image,
+//       id: insertResult.id,
+//       local_path: undefined
+//     }
 
-    ctx.status(201).send({
-      success: true,
-      data: {
-        images: [newImage]
-      }
-    })
-  } else {
-    throw new HttpError("insert single image error", 400)
-  }
-}
+//     ctx.status(201).send({
+//       success: true,
+//       data: {
+//         images: [newImage]
+//       }
+//     })
+//   } else {
+//     throw new HttpError("insert single image error", 400)
+//   }
+// }
 
-async function writeFileToLocal(path: string, content: Uint8Array) {
-  let parsedFile = posix.parse(path)
-  try {
-    // try to read to folder
-    await Deno.stat(parsedFile.dir)
-  } catch{
-    // folder doesn't exist, create it
-    await Deno.mkdir(parsedFile.dir)
-  }
+function writeFileToLocal(path: string, content: Uint8Array) {
 
-  await Deno.writeFile(`${parsedFile.dir}/${parsedFile.base}`, content)
+  ensureFileSync(path)
+  // no need to wait
+  Deno.writeFile(path, content)
 }
